@@ -3180,7 +3180,7 @@ const CTAAnimation = {
               );
             }
   
-            gsap.to(clipboardItem, { backgroundColor: '#FFFF23', duration: 0.3, ease: 'power2.out' });
+            gsap.to(clipboardItem, { backgroundColor: '#7BBBFF', duration: 0.3, ease: 'power2.out' });
           } catch (err) {
             console.error('Failed to copy text: ', err);
           }
