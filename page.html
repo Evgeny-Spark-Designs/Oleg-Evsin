@@ -268,6 +268,16 @@ body {
   transition: transform 0.3s ease, opacity 0.3s ease, color 0.3s ease;
 }
 
+/* .cta-span-heading — "призрачный" акцентный текст в заголовке CTA
+   ("на", "консультации"): полупрозрачная заливка + обводка. Исходный
+   #ffffffa6 (белый) был рассчитан на тёмный фон — на новом светлом
+   фоне бело-на-белом почти невидим. Тот же приём, но в тон тёмно-синих
+   "чернил" (var(--black) с прозрачностью). */
+.cta-span-heading {
+  color: rgba(5, 15, 42, 0.12);
+  -webkit-text-stroke-color: rgba(5, 15, 42, 0.55);
+}
+
 .footer-contact-link:hover .footer-contact-arrow-wrap {
   transform: rotate(90deg);
   opacity: 1;
