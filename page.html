@@ -279,9 +279,24 @@ body {
 }
 
 /* .about-card ("Мой путь") — фон был #dfdececc (тёплый светлый серый),
-   сделан заметно темнее по просьбе клиента. */
+   сделан заметно темнее по просьбе клиента. Текст внутри — фикс.
+   тёмный цвет, а не var(--black): фон этой карточки НЕ зависит от
+   палитры (tweak-кнопка её не трогает), поэтому текст обязан
+   оставаться тёмным даже когда --black становится светлым (тёмные
+   палитры) — иначе светлое на светлом/среднем. Тот же принцип и для
+   .service-card / .faq ниже — у всех фиксированный светлый/средний
+   фон, не участвующий в переключении палитры. */
 .about-card {
   background-color: #A8A695CC;
+  color: #050F2A;
+}
+
+.service-card {
+  color: #050F2A;
+}
+
+.faq {
+  color: #050F2A;
 }
 
 .footer-contact-link:hover .footer-contact-arrow-wrap {
@@ -1043,10 +1058,11 @@ body {
 <script>
 (function () {
   var palettes = {
-    default: { yellow: '#7BBBFF', black: '#050F2A', bg: '#F2FDFF' },
-    dark1: { yellow: '#5A7896', black: '#F4EBD2', bg: '#0B1826' },
-    bork: { yellow: '#F36D24', black: '#CFC8C4', bg: '#3A3330' }
+    default: { yellow: '#7BBBFF', black: '#050F2A', bg: '#F2FDFF', navPanel: 'rgba(212,211,192,0.6)' },
+    dark1: { yellow: '#5A7896', black: '#F4EBD2', bg: '#0B1826', navPanel: 'rgba(0,0,0,0.35)' },
+    bork: { yellow: '#F36D24', black: '#CFC8C4', bg: '#3A3330', navPanel: 'rgba(0,0,0,0.35)' }
   };
+  var currentKey = 'default';
   var toggle = document.getElementById('tweak-palette-toggle');
   var panel = document.getElementById('tweak-palette-panel');
   if (!toggle || !panel) return;
@@ -1057,12 +1073,33 @@ body {
     btn.addEventListener('mouseenter', function () { btn.style.background = '#f0f0f0'; });
     btn.addEventListener('mouseleave', function () { btn.style.background = 'none'; });
     btn.addEventListener('click', function () {
-      var p = palettes[btn.getAttribute('data-palette')];
+      var newKey = btn.getAttribute('data-palette');
+      var p = palettes[newKey];
       if (!p) return;
+      var old = palettes[currentKey];
+
       document.body.style.setProperty('--yellow', p.yellow);
       document.body.style.setProperty('--black', p.black);
       document.body.style.backgroundColor = p.bg;
       document.body.style.color = p.black;
+
+      // .nav-menu-wrap — хардкод-фон, не привязан к переменным.
+      document.querySelectorAll('.nav-menu-wrap').forEach(function (el) {
+        el.style.backgroundColor = p.navPanel;
+      });
+
+      // Иконки-бейджи (весы, значки услуг и т.п.) красятся хардкод-хексом
+      // прямо в атрибуте fill у SVG rect/path, а не через currentColor —
+      // var(--yellow) их не видит вообще. Ищем всё, что сейчас покрашено
+      // в акцент ПРЕДЫДУЩЕЙ палитры, и перекрашиваем в новый.
+      var oldYellow = old.yellow.toLowerCase();
+      document.querySelectorAll('[fill]').forEach(function (el) {
+        if (el.getAttribute('fill').toLowerCase() === oldYellow) {
+          el.setAttribute('fill', p.yellow);
+        }
+      });
+
+      currentKey = newKey;
     });
   });
 })();
