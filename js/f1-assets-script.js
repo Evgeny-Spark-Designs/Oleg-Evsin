@@ -3328,6 +3328,18 @@ const ResizeHandler = {
         }
       });
       StyleEngine.process(el);
+      // Точечно обновить прогресс ТОЛЬКО что созданного триггера этого
+      // элемента (иначе он видит "from"-состояние до следующего скролла).
+      // НЕ вызывать здесь глобальный ScrollTrigger.refresh() — он
+      // пересчитывает старт/энд ВСЕХ триггеров разом, включая
+      // FLIP-перелёты GhostEngine (.nav-button/.nav-button-secondary,
+      // см. РУКОВОДСТВО.md 1.4) — на живой странице это на каждый клик
+      // палитры чуть сдвигало кнопки в hero, и сдвиг накапливался.
+      ScrollTrigger.getAll().forEach(st => {
+        if (st.animation && typeof st.animation.targets === 'function' && st.animation.targets().includes(el)) {
+          st.refresh();
+        }
+      });
     },
     debug: {
       magneticPairs: () => STATE.magneticPairs,

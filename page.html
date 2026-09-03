@@ -1038,7 +1038,7 @@ body {
   <script src="js/swiper-bundle.min.js"></script>
 
 
-	<script src="js/f1-assets-script.js?v=8"></script>
+	<script src="js/f1-assets-script.js?v=9"></script>
   
 <script>
  	document.querySelectorAll('a[href^="#"]').forEach(link => {
@@ -1250,6 +1250,13 @@ body {
       // раздел 1.6, категория 4). Правим сам JSON в атрибутах и просим
       // движок пересобрать именно этот tween (rebuildStyleElement) —
       // полный AnimationEngine.destroy()+init() не нужен и рискованнее.
+      // ВАЖНО: не вызывать здесь window.AnimationEngine.refresh() —
+      // это глобальный ScrollTrigger.refresh(), который на живой
+      // странице пересчитывает СРАЗУ ВСЕ триггеры, включая FLIP-перелёт
+      // кнопок в hero (GhostEngine, РУКОВОДСТВО.md 1.4) — сдвигал
+      // .nav-button/.nav-button-secondary при каждом клике палитры, и
+      // сдвиг накапливался. rebuildStyleElement сам обновляет прогресс
+      // ТОЛЬКО у своего нового триггера — этого достаточно.
       document.querySelectorAll('[data-tl-from], [data-tl-to]').forEach(function (el) {
         var touched = false;
         ['data-tl-from', 'data-tl-to'].forEach(function (attr) {
@@ -1263,12 +1270,6 @@ body {
           window.AnimationEngine.rebuildStyleElement(el);
         }
       });
-      // Свежесозданный scroll-tween не применяет текущий прогресс скролла
-      // сам по себе — без refresh() бейдж останется в "from"-состоянии,
-      // пока не произойдёт следующий скролл.
-      if (window.AnimationEngine && window.AnimationEngine.refresh) {
-        window.AnimationEngine.refresh();
-      }
 
       document.querySelectorAll('img[data-base-src]').forEach(function (img) {
         var base = img.getAttribute('data-base-src');
