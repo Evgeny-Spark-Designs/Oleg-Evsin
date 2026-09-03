@@ -3314,6 +3314,21 @@ const ResizeHandler = {
     rebuildGhosts: () => GhostEngine.rebuild(),
     rebuildMagnetic: () => MagneticPositions.rebuild(),
     recalculateHorizontalScroll: () => HorizontalScroll.recalculate(),
+    // Точечный ре-запуск StyleEngine для ОДНОГО элемента: убивает его
+    // текущий scroll-triggered tween (StyleEngine.process сам не
+    // дедуплицирует — повторный вызов без этого создал бы второй
+    // tween поверх первого) и создаёт заново из текущих data-tl-*
+    // атрибутов элемента. Нужно, если эти атрибуты поменяли в рантайме
+    // (см. tweak-palette — живая перекраска .nav-logo под палитру).
+    rebuildStyleElement: (el) => {
+      if (!el) return;
+      ScrollTrigger.getAll().forEach(st => {
+        if (st.animation && typeof st.animation.targets === 'function' && st.animation.targets().includes(el)) {
+          st.kill();
+        }
+      });
+      StyleEngine.process(el);
+    },
     debug: {
       magneticPairs: () => STATE.magneticPairs,
       state: () => STATE
