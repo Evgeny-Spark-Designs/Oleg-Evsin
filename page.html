@@ -353,6 +353,18 @@ body {
   color: var(--ink-fixed);
 }
 
+/* .social-link (кнопки "позвонить"/"написать" в карточке ЕВСИН®) —
+   тоже фиксированный светлый фон (#ebeada, хардкод во внешнем CSS).
+   Форма самой иконки рисуется SVG-путём .social-bg-path через
+   fill="currentColor" — наследовала var(--black) от body и на тёмных
+   палитрах становилась ПОЧТИ ТЕМ ЖЕ светлым тоном, что и фон плашки
+   (контраст ~1:1) — значок выглядел "смытым" одинаково на любой
+   палитре. .social-path-white (сам глиф — трубка/чат) — намеренно
+   константный var(--white), его не трогаем. */
+.social-bg-path {
+  color: var(--ink-fixed);
+}
+
 .footer-contact-link:hover .footer-contact-arrow-wrap {
   transform: rotate(90deg);
   opacity: 1;
@@ -414,6 +426,16 @@ body {
 
 .hero-heading {
   color: var(--black);
+}
+
+/* .hero-heading лежит поверх ФОТО — на палитре Midnight Blue (dark1)
+   недостаточно контраста к светлым участкам фото (рубашка, пиджак).
+   Правим ТОЛЬКО dark1 (не все палитры разом — Bork и светлая читаются
+   и так) простой обводкой текста; body[data-palette="dark1"] ставит
+   tweak-кнопка при выборе этой палитры (см. её JS). */
+body[data-palette="dark1"] .hero-heading {
+  -webkit-text-stroke: 1px var(--ink-fixed);
+  text-stroke: 1px var(--ink-fixed);
 }
 
 /* мобильное hero-фото: исходник почти квадратный, кадр вертикальный ->
@@ -1230,6 +1252,10 @@ body {
       document.body.style.setProperty('--black', p.black);
       document.body.style.backgroundColor = p.bg;
       document.body.style.color = p.black;
+      // Атрибут для точечных правок ПОД ОДНУ конкретную палитру в CSS
+      // (напр. body[data-palette="dark1"] .hero-heading — обводка
+      // текста только на Midnight Blue, не на всех сразу).
+      document.body.setAttribute('data-palette', newKey);
 
 
       // Иконки-бейджи (весы, значки услуг и т.п.) красятся хардкод-хексом
