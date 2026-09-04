@@ -365,6 +365,14 @@ body {
   color: var(--ink-fixed);
 }
 
+/* .mobile-menu (гамбургер-иконка, <768px) — тот же фиксированный
+   светлый фон (#ebeada, хардкод во внешнем CSS). Полоски иконки —
+   fill="currentColor" на .mobile-menu-icon, наследовали var(--black) и
+   на тёмных палитрах пропадали на своей плашке — тот же паттерн. */
+.mobile-menu-icon {
+  color: var(--ink-fixed);
+}
+
 .footer-contact-link:hover .footer-contact-arrow-wrap {
   transform: rotate(90deg);
   opacity: 1;
@@ -990,6 +998,22 @@ body[data-palette="dark1"] .hero-heading {
    ============================================ */
 
 @media (width < 767px) {
+  /* GhostEngine (fly-текст-в-hero-без-плашки) отключён ниже 768px —
+     .hero-navigation-link на мобильном ВСЕГДА рядом со своей плашкой
+     .nav-item-bg, второго контекста ("текст поверх фото, без плашки")
+     тут не бывает. .nav-docked (см. custom <style> выше) на мобильном
+     не ставится (тот скрипт тоже отключён <768px) — значит без этого
+     override текст остался бы на var(--black) и терялся на своей
+     светлой плашке на тёмных палитрах, ровно как раньше на десктопе.
+     См. РУКОВОДСТВО.md 1.6, живой пример №2. */
+  .hero-navigation-link {
+    color: var(--ink-fixed);
+  }
+
+  .hero-navigation-link.w--current {
+    color: var(--ink-fixed) !important;
+  }
+
   /* ============================================
    4. LAYOUT & ENTRANCE ANIMATIONS
    ============================================ */
